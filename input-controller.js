@@ -20,14 +20,10 @@ class InputController {
 
     constructor(actionsToBind, target) {
         if (actionsToBind) this.bindActions(actionsToBind)
-        if (target) this.target = target
 
-        console.log(target);
-
-        // init
-        target.addEventListener("keydown", this.onKeyDown.bind(this));
-        target.addEventListener("keyup", this.onKeyUp.bind(this));
-
+        if (target) {
+            this.attach(target)
+        }
     }
 
     bindActions(actionsToBind) {
@@ -56,20 +52,16 @@ class InputController {
 
     activate(actionName, eventDetails) {
         if (!this.isActionActive(actionName)) return;
-        if (!this.enabled) return 
-        if (!this.focused) return
     
         const event = new CustomEvent(InputController.ACTION_ACTIVATED, {
           detail: eventDetails
         });
-        console.log(this.target, event);
+        
         this.target.dispatchEvent(event);
     }
 
     deactivate(actionName, eventDetails) {
         if (!this.isActionActive(actionName)) return;
-        if (!this.enabled) return 
-        if (!this.focused) return
     
         const event = new CustomEvent(InputController.ACTION_DEACTIVATED, {
           detail: eventDetails
@@ -80,13 +72,11 @@ class InputController {
     isActionActive(actionName) {
         return this.actions[actionName].enabled !== false
     }
-
-    detach() {
-
-    }
     
     onKeyDown(event) {
-        console.log('onKeyDown');
+        if (!this.enabled) return 
+        if (!this.focused) return
+
         if (this.actions) Object.keys(this.actions).forEach(actionName => {
           const action = this.actions[actionName];
           if (action.keys.indexOf(event.keyCode) !== -1) {
@@ -96,12 +86,35 @@ class InputController {
     }
     
     onKeyUp(event) {
+        if (!this.enabled) return 
+        if (!this.focused) return
+
         if (this.actions) Object.keys(this.actions).forEach(actionName => {
           const action = this.actions[actionName];
           if (action.keys.indexOf(event.keyCode) !== -1) {
             this.deactivate(actionName, { activity: actionName, keyCode: event.keyCode });
           }
         });
+    }
+
+    attach(target) {
+        if (this.target !== target) {
+            // it's for identical links on functions (for remove listener)
+            target.kd = this.onKeyDown.bind(this)
+            target.ku = this.onKeyUp.bind(this)
+
+            target.addEventListener("keydown", target.kd);
+            target.addEventListener("keyup", target.ku);
+
+            this.target = target
+        }
+    }
+
+    detach() {
+        this.target.removeEventListener("keydown", this.target.kd);
+        this.target.removeEventListener("keyup", this.target.ku);
+
+        this.target = null
     }
     
     enable() {

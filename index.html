@@ -9,13 +9,16 @@
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-    <div class="attached-object first" style="top: 50px; left: 50px;">first</div>
+    <div class="attached-object first" tabindex="0" style="top: 50px; left: 50px; background-color: red;">first</div>
+    <div class="attached-object second" tabindex="0" style="top: 50px; left: 300px; background-color: red;">second</div>
 
-    <button>Focus</button>
-    <button>Blur</button>
+    <button onclick="controller.focus()">Focus</button>
+    <button onclick="controller.blur()">Blur</button>
 
-    <button>Enable</button>
-    <button>Disable</button>
+    <button onclick="controller.enable()">Enable</button>
+    <button onclick="controller.disable()">Disable</button>
+
+    <button id="bind-space">Bind space</button>
 
     <script src="./input-controller-test.js"></script>
 </body>
