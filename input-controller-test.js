@@ -32,16 +32,16 @@ const callbabkActivated = (event) => {
     const elem = event.target
 
     if (event.detail.activity === 'up') {
-        elem.style.top = parseInt(elem.style.top) - 3 + 'px'
+        elem.style.top = parseInt(elem.style.top) - 5 + 'px'
     }
     if (event.detail.activity === 'down') {
-        elem.style.top = parseInt(elem.style.top) + 3 + 'px'
+        elem.style.top = parseInt(elem.style.top) + 5 + 'px'
     }
     if (event.detail.activity === 'left') {
-        elem.style.left = parseInt(elem.style.left) - 3 + 'px'
+        elem.style.left = parseInt(elem.style.left) - 5 + 'px'
     }
     if (event.detail.activity === 'right') {
-        elem.style.left = parseInt(elem.style.left) + 3 + 'px'
+        elem.style.left = parseInt(elem.style.left) + 5 + 'px'
     }
 
     if (event.detail.activity === 'jump') {
@@ -77,12 +77,6 @@ document.getElementById('bind-space').addEventListener('click', () => {
 
 // Включение активности "left"
 // controller.enableAction("left");
-
-// Отключение генерации событий контроллера
-// controller.disable();
-
-// Включение генерации событий контроллера
-// controller.enable();
 
 // Уведомление о получении фокуса окном
 // controller.focus();

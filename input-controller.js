@@ -5,7 +5,7 @@ class InputController {
     actions = {}
     enabled = true
     focused = true
-    pressedKeys = []
+    pressedKeys = {}
     intervalCount = 0
 
     /*
@@ -51,85 +51,53 @@ class InputController {
         this.actions[actionName].enabled = false
     }
 
+    isActionActive(actionName) {
+        // if (!this.enabled) return false
+        // if (!this.focused) return false
+
+        return this.actions[actionName].enabled
+    }
+
+    isKeyPressed(keyCode) {
+        return this.pressedKeys[keyCode] === true
+    }
+
     activate(actionName, eventDetails) {
         if (!this.isActionActive(actionName)) return;
     
         const event = new CustomEvent(InputController.ACTION_ACTIVATED, {
           detail: eventDetails
         });
-        
+
         if (this.target) this.target.dispatchEvent(event);
     }
 
-    deactivate(actionName, eventDetails) {
-        if (!this.isActionActive(actionName)) return;
-    
+    deactivate(actionName, eventDetails) {    
         const event = new CustomEvent(InputController.ACTION_DEACTIVATED, {
           detail: eventDetails
         });
         if (this.target) this.target.dispatchEvent(event);
     }
-
-    isActionActive(actionName) {
-        if (!this.enabled) return false
-        if (!this.focused) return false
-
-        return this.actions[actionName].enabled !== false
-    }
-
-    isKeyPressed(keyCode) {
-        return this.pressedKeys.findIndex(item => item.key === keyCode) !== -1
-    }
     
     onKeyDown(event) {
-        if (!this.isKeyPressed(event.keyCode)) {
-            this.pressedKeys = this.pressedKeys.map(item => ({key: item.key, last: false}))
-            this.pressedKeys.push({key: event.keyCode, last: true})
+        const actionName = Object.keys(this.actions).find(key => this.actions[key].keys.indexOf(event.keyCode) !== -1)
+        if (!actionName) return
+        this.enableAction(actionName)
+        this.pressedKeys[event.keyCode] = true
 
-            const interval = setInterval(() => {
-                const findedEvent = this.pressedKeys.find(item => item.key === event.keyCode)
-                
-                this.intervalCount++;
-                if (!this.isKeyPressed(event.keyCode)) {
-                    clearInterval(interval)
-                    this.intervalCount = 0
-                    return 
-                }
-                
-                if (!findedEvent || !findedEvent.last) return
-                
-                if (this.actions) Object.keys(this.actions).forEach(actionName => {
-                    const action = this.actions[actionName];
-                    if (action.keys.indexOf(event.keyCode) !== -1) {
-                        this.activate(actionName, { activity: actionName, keyCode: event.keyCode });
-
-                        // once for abort interval< if we need do this action 1 time
-                        if (action.once) clearInterval(interval)
-                    }
-                });
-            })
-        }
+        this.activate(actionName, { activity: actionName, keyCode: event.keyCode })
     }
     
     onKeyUp(event) {
-        const i = this.pressedKeys.findIndex(item => item.key === event.keyCode)
-        this.pressedKeys.splice(i, 1)
+        const actionName = Object.keys(this.actions).find(key => this.actions[key].keys.indexOf(event.keyCode) !== -1)
+        if (!actionName) return
+        this.disableAction(actionName)
+        this.pressedKeys[event.keyCode] = false
 
-        if (this.pressedKeys.length) {
-            this.pressedKeys = this.pressedKeys.map((item, i) => {
-                if (i === this.pressedKeys.length - 1) {
-                    item.last = true
-                }
-                return item
-            })
-        }
+        // const i = this.pressedKeys.findIndex(item => item.key === event.keyCode)
+        // this.pressedKeys.splice(i, 1)
 
-        if (this.actions) Object.keys(this.actions).forEach(actionName => {
-          const action = this.actions[actionName];
-          if (action.keys.indexOf(event.keyCode) !== -1) {
-            this.deactivate(actionName, { activity: actionName, keyCode: event.keyCode });
-          }
-        });
+        this.deactivate(actionName, { activity: actionName, keyCode: event.keyCode })
     }
 
     attach(target, dontEnable = true) {
