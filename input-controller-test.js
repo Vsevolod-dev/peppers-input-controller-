@@ -32,16 +32,16 @@ const callbabkActivated = (event) => {
     const elem = event.target
 
     if (event.detail.activity === 'up') {
-        elem.style.top = parseInt(elem.style.top) - 2 + 'px'
+        elem.style.top = parseInt(elem.style.top) - 3 + 'px'
     }
     if (event.detail.activity === 'down') {
-        elem.style.top = parseInt(elem.style.top) + 2 + 'px'
+        elem.style.top = parseInt(elem.style.top) + 3 + 'px'
     }
     if (event.detail.activity === 'left') {
-        elem.style.left = parseInt(elem.style.left) - 2 + 'px'
+        elem.style.left = parseInt(elem.style.left) - 3 + 'px'
     }
     if (event.detail.activity === 'right') {
-        elem.style.left = parseInt(elem.style.left) + 2 + 'px'
+        elem.style.left = parseInt(elem.style.left) + 3 + 'px'
     }
 
     if (event.detail.activity === 'jump') {
@@ -66,7 +66,8 @@ second.addEventListener(InputController.ACTION_DEACTIVATED, callbackDeactivated)
 document.getElementById('bind-space').addEventListener('click', () => {
     controller.bindActions({
         jump: {
-            keys: [32]
+            keys: [32],
+            once: true
         }
     })
 }, {once: true})

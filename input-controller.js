@@ -41,7 +41,6 @@ class InputController {
                 this.actions[key] = actionsToBind[key]
             }
         })
-        console.log(this.actions);
     }
 
     enableAction(actionName) {
@@ -59,7 +58,7 @@ class InputController {
           detail: eventDetails
         });
         
-        this.target.dispatchEvent(event);
+        if (this.target) this.target.dispatchEvent(event);
     }
 
     deactivate(actionName, eventDetails) {
@@ -68,7 +67,7 @@ class InputController {
         const event = new CustomEvent(InputController.ACTION_DEACTIVATED, {
           detail: eventDetails
         });
-        this.target.dispatchEvent(event);
+        if (this.target) this.target.dispatchEvent(event);
     }
 
     isActionActive(actionName) {
@@ -103,6 +102,9 @@ class InputController {
                     const action = this.actions[actionName];
                     if (action.keys.indexOf(event.keyCode) !== -1) {
                         this.activate(actionName, { activity: actionName, keyCode: event.keyCode });
+
+                        // once for abort interval< if we need do this action 1 time
+                        if (action.once) clearInterval(interval)
                     }
                 });
             })
@@ -130,7 +132,7 @@ class InputController {
         });
     }
 
-    attach(target) {
+    attach(target, dontEnable = true) {
         if (this.target !== target) {
             // it's for identical links on functions (for remove listener)
             target.kd = this.onKeyDown.bind(this)
@@ -140,6 +142,7 @@ class InputController {
             target.addEventListener("keyup", target.ku);
 
             this.target = target
+            this.enabled = dontEnable
         }
     }
 

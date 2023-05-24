@@ -12,11 +12,14 @@
     <div class="attached-object first" tabindex="0" style="top: 50px; left: 50px; background-color: red;">first</div>
     <div class="attached-object second" tabindex="0" style="top: 50px; left: 300px; background-color: red;">second</div>
 
-    <button onclick="controller.focus()">Focus</button>
-    <button onclick="controller.blur()">Blur</button>
+    <!-- <button onclick="controller.focus()">Focus</button>
+    <button onclick="controller.blur()">Blur</button> -->
 
-    <button onclick="controller.enable()">Enable</button>
-    <button onclick="controller.disable()">Disable</button>
+    <button onclick="controller.enable()">Enable controller</button>
+    <button onclick="controller.disable()">Disable controller</button>
+
+    <button onclick="controller.disableAction('left')">Disable left</button>
+    <button onclick="controller.enableAction('left')">Enable left</button>
 
     <button id="bind-space">Bind space</button>
 
