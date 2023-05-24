@@ -5,6 +5,7 @@ class InputController {
     actions = {}
     enabled = true
     focused = true
+    pressedKeys = []
 
     /*
         {
@@ -72,22 +73,36 @@ class InputController {
     isActionActive(actionName) {
         return this.actions[actionName].enabled !== false
     }
+
+    isKeyPressed(keyCode) {
+        return this.pressedKeys.indexOf(keyCode) !== -1
+    }
     
     onKeyDown(event) {
         if (!this.enabled) return 
         if (!this.focused) return
 
-        if (this.actions) Object.keys(this.actions).forEach(actionName => {
-          const action = this.actions[actionName];
-          if (action.keys.indexOf(event.keyCode) !== -1) {
-            this.activate(actionName, { activity: actionName, keyCode: event.keyCode });
-          }
-        });
+        if (!this.isKeyPressed(event.keyCode)) {
+            this.pressedKeys.push(event.keyCode)
+
+            const interval = setInterval(() => {                
+                if (this.actions) Object.keys(this.actions).forEach(actionName => {
+                    const action = this.actions[actionName];
+                    if (action.keys.indexOf(event.keyCode) !== -1) {
+                    this.activate(actionName, { activity: actionName, keyCode: event.keyCode });
+                    }
+                });
+
+                if (!this.isKeyPressed(event.keyCode)) {
+                    clearInterval(interval)
+                }
+            })
+        }
     }
     
     onKeyUp(event) {
-        if (!this.enabled) return 
-        if (!this.focused) return
+        const i = this.pressedKeys.indexOf(event.keyCode)
+        delete this.pressedKeys[i]
 
         if (this.actions) Object.keys(this.actions).forEach(actionName => {
           const action = this.actions[actionName];

@@ -32,16 +32,16 @@ const callbabkActivated = (event) => {
     const elem = event.target
 
     if (event.detail.activity === 'up') {
-        elem.style.top = parseInt(elem.style.top) - 5 + 'px'
+        elem.style.top = parseInt(elem.style.top) - 2 + 'px'
     }
     if (event.detail.activity === 'down') {
-        elem.style.top = parseInt(elem.style.top) + 5 + 'px'
+        elem.style.top = parseInt(elem.style.top) + 2 + 'px'
     }
     if (event.detail.activity === 'left') {
-        elem.style.left = parseInt(elem.style.left) - 5 + 'px'
+        elem.style.left = parseInt(elem.style.left) - 2 + 'px'
     }
     if (event.detail.activity === 'right') {
-        elem.style.left = parseInt(elem.style.left) + 5 + 'px'
+        elem.style.left = parseInt(elem.style.left) + 2 + 'px'
     }
 
     if (event.detail.activity === 'jump') {
@@ -69,7 +69,7 @@ document.getElementById('bind-space').addEventListener('click', () => {
             keys: [32]
         }
     })
-})
+}, {once: true})
 
 // Отключение активности "left"
 // controller.disableAction("left");
