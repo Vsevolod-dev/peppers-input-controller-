@@ -6,6 +6,7 @@ class InputController {
     enabled = true
     focused = true
     pressedKeys = []
+    intervalCount = 0
 
     /*
         {
@@ -71,38 +72,55 @@ class InputController {
     }
 
     isActionActive(actionName) {
+        if (!this.enabled) return false
+        if (!this.focused) return false
+
         return this.actions[actionName].enabled !== false
     }
 
     isKeyPressed(keyCode) {
-        return this.pressedKeys.indexOf(keyCode) !== -1
+        return this.pressedKeys.findIndex(item => item.key === keyCode) !== -1
     }
     
     onKeyDown(event) {
-        if (!this.enabled) return 
-        if (!this.focused) return
-
         if (!this.isKeyPressed(event.keyCode)) {
-            this.pressedKeys.push(event.keyCode)
+            this.pressedKeys = this.pressedKeys.map(item => ({key: item.key, last: false}))
+            this.pressedKeys.push({key: event.keyCode, last: true})
 
-            const interval = setInterval(() => {                
+            const interval = setInterval(() => {
+                const findedEvent = this.pressedKeys.find(item => item.key === event.keyCode)
+                
+                this.intervalCount++;
+                if (!this.isKeyPressed(event.keyCode)) {
+                    clearInterval(interval)
+                    this.intervalCount = 0
+                    return 
+                }
+                
+                if (!findedEvent || !findedEvent.last) return
+                
                 if (this.actions) Object.keys(this.actions).forEach(actionName => {
                     const action = this.actions[actionName];
                     if (action.keys.indexOf(event.keyCode) !== -1) {
-                    this.activate(actionName, { activity: actionName, keyCode: event.keyCode });
+                        this.activate(actionName, { activity: actionName, keyCode: event.keyCode });
                     }
                 });
-
-                if (!this.isKeyPressed(event.keyCode)) {
-                    clearInterval(interval)
-                }
             })
         }
     }
     
     onKeyUp(event) {
-        const i = this.pressedKeys.indexOf(event.keyCode)
-        delete this.pressedKeys[i]
+        const i = this.pressedKeys.findIndex(item => item.key === event.keyCode)
+        this.pressedKeys.splice(i, 1)
+
+        if (this.pressedKeys.length) {
+            this.pressedKeys = this.pressedKeys.map((item, i) => {
+                if (i === this.pressedKeys.length - 1) {
+                    item.last = true
+                }
+                return item
+            })
+        }
 
         if (this.actions) Object.keys(this.actions).forEach(actionName => {
           const action = this.actions[actionName];
